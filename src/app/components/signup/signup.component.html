@@ -1,0 +1,84 @@
+<div class="auth-page fade-in">
+
+    <!-- Left Panel: Brand -->
+    <div class="auth-left">
+        <div class="brand-block">
+            <div class="brand-icon">
+                <i class="pi pi-video"></i>
+            </div>
+            <h1 class="brand-name">WebCalling</h1>
+            <p class="brand-tagline">Join thousands of users connecting in real time.</p>
+            <ul class="feature-list">
+                <li><i class="pi pi-check-circle"></i> HD Video &amp; Voice Calls</li>
+                <li><i class="pi pi-check-circle"></i> Secure Real-Time Messaging</li>
+                <li><i class="pi pi-check-circle"></i> Smart Call History</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Right Panel: Signup Form -->
+    <div class="auth-right">
+        <div class="auth-card fade-in">
+
+            <div class="auth-header">
+                <h2>Create an account</h2>
+                <p>Sign up and start communicating today</p>
+            </div>
+
+            <form (ngSubmit)="onSubmit()" #signupForm="ngForm" class="auth-form">
+
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Full Name</label>
+                    <div class="input-wrap">
+                        <i class="pi pi-user input-icon"></i>
+                        <input id="username" type="text" [(ngModel)]="user.username"
+                               name="username" required #username="ngModel"
+                               placeholder="John Doe" class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <div class="input-wrap">
+                        <i class="pi pi-envelope input-icon"></i>
+                        <input id="email" type="email" [(ngModel)]="user.email"
+                               name="email" required #email="ngModel"
+                               placeholder="name@company.com" class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <i class="pi pi-lock input-icon"></i>
+                        <input id="password" [type]="showPassword ? 'text' : 'password'"
+                               [(ngModel)]="user.password" name="password"
+                               required #password="ngModel"
+                               placeholder="Create a strong password" class="form-input with-eye" />
+                        <button type="button" class="eye-btn" (click)="showPassword = !showPassword" tabindex="-1">
+                            <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p-message *ngIf="error" severity="error" [text]="error" styleClass="w-full"></p-message>
+
+                <button type="submit" class="auth-btn" [disabled]="!signupForm.form.valid || loading">
+                    <span *ngIf="!loading">Create Account</span>
+                    <i *ngIf="loading" class="pi pi-spin pi-spinner"></i>
+                </button>
+
+            </form>
+
+            <div class="auth-footer">
+                <span>Already have an account?</span>
+                <a routerLink="/login">Sign in here</a>
+            </div>
+
+        </div>
+    </div>
+
+</div>

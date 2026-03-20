@@ -1,0 +1,36 @@
+<div class="chat-container fade-in">
+    <!-- Header -->
+    <div class="chat-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <p-avatar [image]="receiver.avatar" size="large"></p-avatar>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+                <span class="username-text">{{receiver.username}}</span>
+                <div style="display:flex;align-items:center;">
+                    <span class="status-dot"></span>
+                    <span class="status-label">Active now</span>
+                </div>
+            </div>
+        </div>
+        <div class="actions" style="display:flex;gap:6px;">
+            <p-button icon="pi pi-phone" [text]="true" pTooltip="Voice Call" tooltipPosition="bottom" (onClick)="startCall(false)"></p-button>
+            <p-button icon="pi pi-video" [text]="true" pTooltip="Video Call" tooltipPosition="bottom" (onClick)="startCall(true)"></p-button>
+            <p-button icon="pi pi-info-circle" [text]="true" pTooltip="Info" tooltipPosition="bottom"></p-button>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages-list" #scrollMe>
+        <div *ngFor="let msg of messages" class="message-wrapper" [class.own]="msg.fromUserId === currentUser.id">
+            <div class="message-bubble">{{msg.message}}</div>
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+        <form (ngSubmit)="sendMessage()" style="display:flex;align-items:stretch;">
+            <p-button icon="pi pi-plus" [text]="true" styleClass="attach-btn" type="button"></p-button>
+            <input pInputText placeholder="Type your message..." [(ngModel)]="message" name="msg" class="flex-1" />
+            <p-button icon="pi pi-send" type="submit" styleClass="send-btn"></p-button>
+        </form>
+    </div>
+</div>

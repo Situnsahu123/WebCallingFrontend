@@ -1,0 +1,64 @@
+<!-- Incoming / Outgoing Ringing state - small centered popup -->
+<p-dialog [(visible)]="visible" [modal]="true" [closable]="false" [draggable]="false" [resizable]="false"
+          [style]="{ width: '380px' }" class="call-ring-dialog"
+          *ngIf="!callAccepted">
+    <div class="ring-container">
+        <div class="ring-avatar">
+            <div class="ring-ripple"></div>
+            <div class="ring-ripple delay-1"></div>
+            <div class="ring-ripple delay-2"></div>
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="ring-user-img" alt="user" />
+        </div>
+        <div class="ring-name">{{otherUserName}}</div>
+        <div class="ring-status">
+            <span *ngIf="receivingCall">Incoming {{isVideo ? 'Video' : 'Voice'}} Call...</span>
+            <span *ngIf="callingOut">Calling...</span>
+        </div>
+        <div class="ring-actions">
+            <button *ngIf="receivingCall" class="ring-btn decline" (click)="endCall()">
+                <i class="pi pi-phone" style="transform: rotate(135deg);"></i>
+            </button>
+            <button *ngIf="receivingCall" class="ring-btn accept" (click)="answerCall()">
+                <i class="pi pi-phone"></i>
+            </button>
+            <button *ngIf="callingOut && !callAccepted" class="ring-btn decline" (click)="endCall()">
+                <i class="pi pi-phone" style="transform: rotate(135deg);"></i>
+            </button>
+        </div>
+    </div>
+</p-dialog>
+
+<!-- Active video call - fullscreen popup -->
+<div class="video-call-overlay" *ngIf="callAccepted && visible">
+    <!-- Remote video: fills the entire overlay -->
+    <video #remoteVideo autoplay playsinline class="remote-video"></video>
+
+    <!-- Overlay gradient for controls readability -->
+    <div class="overlay-gradient"></div>
+
+    <!-- Top bar: who you're talking to -->
+    <div class="call-topbar">
+        <span class="call-topbar-name">{{otherUserName}}</span>
+        <span class="call-topbar-status">{{isVideo ? 'Video Call' : 'Voice Call'}}</span>
+    </div>
+
+    <!-- Local video PIP -->
+    <div class="local-pip" *ngIf="isVideo">
+        <video #localVideo autoplay playsinline muted class="local-video"></video>
+    </div>
+
+    <!-- Bottom controls bar -->
+    <div class="call-controls">
+        <button class="ctrl-btn" (click)="toggleMute()" [class.active]="isMuted">
+            <i [class]="isMuted ? 'pi pi-microphone-slash' : 'pi pi-microphone'"></i>
+        </button>
+        <button class="ctrl-btn" (click)="toggleCamera()" [class.active]="isCameraOff" *ngIf="isVideo">
+            <i [class]="isCameraOff ? 'pi pi-video-off' : 'pi pi-video'"></i>
+        </button>
+        <button class="ctrl-btn end-btn" (click)="endCall()">
+            <i class="pi pi-phone" style="transform: rotate(135deg);"></i>
+        </button>
+    </div>
+</div>
+
+

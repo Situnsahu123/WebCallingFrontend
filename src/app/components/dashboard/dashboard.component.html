@@ -1,0 +1,100 @@
+<div class="dashboard-layout fade-in">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Brand Header -->
+        <div class="sidebar-brand">
+            <div class="sidebar-logo">
+                <i class="pi pi-video"></i>
+            </div>
+            <span class="sidebar-brand-name">WebCalling</span>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar p-4 pb-0">
+            <span class="p-input-icon-left w-full">
+                <i class="pi pi-search"></i>
+                <input type="text" pInputText placeholder="Search contacts..." class="w-full" [(ngModel)]="searchQuery" (input)="filterData()" />
+            </span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="segmented-control">
+            <div class="segment-tab" [class.active]="currentTab === 'contacts'" (click)="currentTab = 'contacts'; filterData()">
+                <i class="pi pi-users" style="margin-right:5px;font-size:0.75rem;"></i>Contacts
+            </div>
+            <div class="segment-tab" [class.active]="currentTab === 'calls'" (click)="currentTab = 'calls'; filterData()">
+                <i class="pi pi-phone" style="margin-right:5px;font-size:0.75rem;"></i>Calls
+            </div>
+        </div>
+
+        <!-- Contacts List -->
+        <div class="user-list" *ngIf="currentTab === 'contacts'">
+            <div *ngIf="filteredUsers.length === 0" class="p-4 text-center" style="color:#334155;font-size:0.85rem;padding-top:2rem!important;">
+                <i class="pi pi-search" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;"></i>
+                No contacts found
+            </div>
+            <div *ngFor="let user of filteredUsers" class="user-item"
+                 [class.selected]="selectedUser?._id === user._id" (click)="selectedUser = user">
+                <div class="avatar-container">
+                    <p-avatar [image]="user.avatar" size="large"></p-avatar>
+                    <span class="status-indicator" [class.online]="user.status === 'online'"></span>
+                </div>
+                <div class="user-details overflow-hidden">
+                    <div class="username">{{user.username}}</div>
+                    <div class="status-text">{{user.status === 'online' ? '● Available' : '○ Offline'}}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calls List -->
+        <div class="call-list" *ngIf="currentTab === 'calls'">
+            <div *ngIf="filteredCalls.length === 0" class="p-4 text-center" style="color:#334155;font-size:0.85rem;padding-top:2rem!important;">
+                <i class="pi pi-phone" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;"></i>
+                No call history
+            </div>
+            <div *ngFor="let call of filteredCalls" class="user-item"
+                 (click)="selectedUser = (call.caller._id === currentUser.id ? call.receiver : call.caller); currentTab = 'contacts'">
+                <div class="avatar-container">
+                    <p-avatar [image]="call.caller._id === currentUser.id ? call.receiver.avatar : call.caller.avatar" size="large"></p-avatar>
+                </div>
+                <div class="user-details overflow-hidden">
+                    <div class="username" [ngClass]="{'text-red-400': call.status === 'missed' && call.receiver._id === (currentUser?.id || currentUser?._id)}">
+                        {{call.caller._id === (currentUser?.id || currentUser?._id) ? call.receiver.username : call.caller.username}}
+                    </div>
+                    <div style="display:flex;align-items:center;gap:5px;margin-top:2px;">
+                        <i class="pi" style="font-size:0.75rem;" [ngClass]="{
+                            'pi-arrow-down-left text-green-500': call.receiver._id === (currentUser?.id || currentUser?._id) && call.status === 'answered',
+                            'pi-arrow-down-left text-red-500': call.receiver._id === (currentUser?.id || currentUser?._id) && call.status === 'missed',
+                            'pi-arrow-down-left text-orange-500': call.receiver._id === (currentUser?.id || currentUser?._id) && call.status === 'rejected',
+                            'pi-arrow-up-right text-green-500': call.caller._id === (currentUser?.id || currentUser?._id) && call.status === 'answered',
+                            'pi-arrow-up-right text-red-500': call.caller._id === (currentUser?.id || currentUser?._id) && call.status === 'missed',
+                            'pi-arrow-up-right text-orange-500': call.caller._id === (currentUser?.id || currentUser?._id) && call.status === 'rejected'
+                        }"></i>
+                        <span style="font-size:0.75rem;color:#475569;">{{call.timestamp | date:'short'}}</span>
+                        <i class="pi" style="font-size:0.75rem;color:#475569;margin-left:auto;" [ngClass]="call.isVideo ? 'pi-video' : 'pi-phone'"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Footer -->
+        <div class="sidebar-footer">
+            <p-button icon="pi pi-sign-out" label="Sign Out" styleClass="w-full" class="w-full" (onClick)="logout()"></p-button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <app-chat *ngIf="selectedUser" [receiver]="selectedUser"></app-chat>
+        <div *ngIf="!selectedUser" class="empty-state">
+            <div class="empty-state-inner">
+                <div class="empty-icon-wrap">
+                    <i class="pi pi-comments"></i>
+                </div>
+                <h2>Hello, {{currentUser?.username}} 👋</h2>
+                <p>Select a contact to start a secure conversation or make a call</p>
+            </div>
+        </div>
+    </div>
+</div>
+<app-call></app-call>
