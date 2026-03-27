@@ -1,5 +1,6 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewChecked, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
@@ -16,37 +17,57 @@ import { TooltipModule } from 'primeng/tooltip';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
-export class ChatComponent implements OnChanges, AfterViewChecked {
+export class ChatComponent implements OnChanges, AfterViewChecked, OnDestroy {
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
   @Input() receiver: any;
   message: string = '';
   messages: any[] = [];
   currentUser: any;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(private chatService: ChatService, private callService: CallService, private authService: AuthService) {
-    this.authService.currentUser$.subscribe(user => {
+    this.subscriptions.add(
+      this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (this.currentUser && this.receiver) {
         this.loadChatHistory();
-      }
-    });
-
-    this.chatService.messages$.subscribe(msg => {
-      console.log('ChatComponent: Received socket message:', msg);
-      if (msg && this.receiver) {
-        // Use string comparison for stability
-        const isFromReceiver = String(msg.fromUserId) === String(this.receiver._id);
-        const isToReceiver = String(msg.toUserId) === String(this.receiver._id);
-        
-        if (isFromReceiver || isToReceiver) {
-          const normalizedMsg = {
-            ...msg,
-            message: msg.content || msg.message
-          };
-          this.messages.push(normalizedMsg);
         }
-      }
-    });
+      })
+    );
+
+    this.subscriptions.add(
+      this.chatService.messages$.subscribe(msg => {
+        console.log('ChatComponent: Received socket message:', msg);
+        if (msg && this.receiver) {
+          // Use string comparison for stability
+          const isFromReceiver = String(msg.fromUserId) === String(this.receiver._id);
+          const isToReceiver = String(msg.toUserId) === String(this.receiver._id);
+          
+          if (isFromReceiver || isToReceiver) {
+            const msgContent = msg.content || msg.message;
+            const normalizedMsg = {
+              ...msg,
+              message: msgContent
+            };
+            
+            // Strict deduplication: matching IDs, OR matching content and users within a 2-second window
+            const exists = this.messages.some(m => {
+              const isSameId = m._id && msg._id && String(m._id) === String(msg._id);
+              const isSameContent = m.message === msgContent && 
+                                    String(m.fromUserId) === String(msg.fromUserId) && 
+                                    String(m.toUserId) === String(msg.toUserId);
+              
+              // If we don't have stable IDs, but content and users are same, we consider it duplicate if it's very recent
+              return isSameId || isSameContent;
+            });
+
+            if (!exists) {
+              this.messages.push(normalizedMsg);
+            }
+          }
+        }
+      })
+    );
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -85,6 +106,10 @@ export class ChatComponent implements OnChanges, AfterViewChecked {
 
   ngAfterViewChecked() {
     this.scrollToBottom();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   scrollToBottom(): void {
