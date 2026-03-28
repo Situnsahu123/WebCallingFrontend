@@ -16,7 +16,7 @@ export class ChatService {
   public userStatus$ = this.userStatusSubject.asObservable();
 
   constructor(private authService: AuthService, private http: HttpClient) {
-    this.socket = io('http://localhost:5005');
+    this.socket = io('https://webcallingbackend.onrender.com');
     
     this.socket.on('connect', () => {
       console.log('ChatService: Socket connected:', this.socket.id);
@@ -53,11 +53,11 @@ export class ChatService {
   }
 
   getMessages(userId1: string, userId2: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:5005/api/messages/${userId1}/${userId2}`);
+    return this.http.get<any[]>(`https://webcallingbackend.onrender.com/api/messages/${userId1}/${userId2}`);
   }
 
   getCalls(userId: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:5005/api/calls/${userId}`);
+    return this.http.get<any[]>(`https://webcallingbackend.onrender.com/api/calls/${userId}`);
   }
 
   getSocket() {

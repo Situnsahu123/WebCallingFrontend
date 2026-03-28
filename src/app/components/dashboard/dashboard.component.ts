@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchUsers() {
-    this.http.get<any[]>('http://localhost:5005/api/users').subscribe({
+    this.http.get<any[]>('https://webcallingbackend.onrender.com/api/users').subscribe({
       next: (users) => {
         const currentUserId = String(this.currentUser?.id || this.currentUser?._id || '');
         this.users = users.filter(u => String(u._id || u.id) !== currentUserId);
