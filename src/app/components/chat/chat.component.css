@@ -208,3 +208,40 @@
     background: linear-gradient(135deg, #a5b4fc, #818cf8) !important;
     transform: none !important;
 }
+
+/* ── Mobile Responsive Overrides ──────────────────── */
+::ng-deep .mobile-back-btn {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    ::ng-deep .mobile-back-btn {
+        display: inline-flex !important;
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        color: #e2e8f0 !important;
+        margin-right: -4px !important;
+    }
+
+    .chat-header {
+        padding: 0.75rem 1rem !important;
+    }
+
+    .messages-list {
+        padding: 1rem !important;
+    }
+
+    .message-wrapper {
+        max-width: 85%;
+    }
+
+    .chat-input {
+        padding: 0.75rem 1rem !important;
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
+    }
+
+    .chat-input input {
+        font-size: 1rem !important; /* Prevents auto-zoom on iOS */
+    }
+}

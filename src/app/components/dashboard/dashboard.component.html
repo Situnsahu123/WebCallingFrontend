@@ -1,4 +1,4 @@
-<div class="dashboard-layout fade-in">
+<div class="dashboard-layout fade-in" [class.has-selected-user]="!!selectedUser">
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Brand Header -->
@@ -85,7 +85,7 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <app-chat *ngIf="selectedUser" [receiver]="selectedUser"></app-chat>
+        <app-chat *ngIf="selectedUser" [receiver]="selectedUser" (closeChat)="selectedUser = null"></app-chat>
         <div *ngIf="!selectedUser" class="empty-state">
             <div class="empty-state-inner">
                 <div class="empty-icon-wrap">

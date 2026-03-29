@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewChecked, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewChecked, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -20,6 +20,7 @@ import { TooltipModule } from 'primeng/tooltip';
 export class ChatComponent implements OnChanges, AfterViewChecked, OnDestroy {
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
   @Input() receiver: any;
+  @Output() closeChat = new EventEmitter<void>();
   message: string = '';
   messages: any[] = [];
   currentUser: any;
@@ -102,6 +103,10 @@ export class ChatComponent implements OnChanges, AfterViewChecked, OnDestroy {
   startCall(isVideo: boolean) {
     if (!this.receiver) return;
     this.callService.startCall(this.receiver._id, isVideo, this.receiver.username);
+  }
+
+  goBack() {
+    this.closeChat.emit();
   }
 
   ngAfterViewChecked() {

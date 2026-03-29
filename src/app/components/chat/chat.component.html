@@ -2,6 +2,7 @@
     <!-- Header -->
     <div class="chat-header">
         <div style="display:flex;align-items:center;gap:12px;">
+            <p-button icon="pi pi-arrow-left" [text]="true" styleClass="mobile-back-btn" (onClick)="goBack()"></p-button>
             <p-avatar [image]="receiver.avatar" size="large"></p-avatar>
             <div style="display:flex;flex-direction:column;gap:2px;">
                 <span class="username-text">{{receiver.username}}</span>

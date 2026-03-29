@@ -279,3 +279,27 @@
     line-height: 1.6;
     max-width: 280px;
 }
+
+/* ── Responsive Mobile View ──────────────────────── */
+@media (max-width: 768px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        width: 100vw;
+    }
+    
+    .main-content {
+        display: none;
+    }
+    
+    .dashboard-layout.has-selected-user .sidebar {
+        display: none;
+    }
+    
+    .dashboard-layout.has-selected-user .main-content {
+        display: flex;
+        width: 100vw;
+    }
+}
